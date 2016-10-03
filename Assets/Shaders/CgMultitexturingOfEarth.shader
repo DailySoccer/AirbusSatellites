@@ -82,76 +82,61 @@ Shader "Cg multitexturing of Earth" {
             return output;
          }
  
-         float4 frag(vertexOutput input) : COLOR
-         {
-            float4 nighttimeColor = 
-               tex2D(_MainTex, input.tex.xy);    
-            float4 daytimeColor = 
-               tex2D(_DecalTex, input.tex.xy);
+         float4 frag(vertexOutput input) : COLOR {
+
+            float4 nighttimeColor = tex2D(_MainTex, input.tex.xy);    
+            float4 daytimeColor = tex2D(_DecalTex, input.tex.xy);
+
+            float4 diffuseColor = lerp(nighttimeColor, daytimeColor, input.levelOfLighting);
                
-           float4 diffuseColor = lerp(nighttimeColor, daytimeColor, 
-               input.levelOfLighting);
-               
-            float4 encodedNormal = tex2D(_BumpMap, 
-           _BumpMap_ST.xy * input.tex.xy + _BumpMap_ST.zw);
-        float3 localCoords = float3(2.0 * encodedNormal.a - 1.0, 
-            2.0 * encodedNormal.g - 1.0, 0.0);
-        localCoords.z = sqrt(1.0 - dot(localCoords, localCoords));
-           // approximation without sqrt:  localCoords.z = 
-           // 1.0 - 0.5 * dot(localCoords, localCoords);
+            float4 encodedNormal = tex2D(_BumpMap, _BumpMap_ST.xy * input.tex.xy + _BumpMap_ST.zw);
 
-        float3x3 local2WorldTranspose = float3x3(
-           input.tangentWorld,
-           input.binormalWorld, 
-           input.normalWorld);
-        float3 normalDirection = 
-           normalize(mul(localCoords, local2WorldTranspose));
+        	float3 localCoords = float3(2.0 * encodedNormal.a - 1.0, 2.0 * encodedNormal.g - 1.0, 0.0);
+        	localCoords.z = sqrt(1.0 - dot(localCoords, localCoords));
+           	// approximation without sqrt:  localCoords.z = 
+           	// 1.0 - 0.5 * dot(localCoords, localCoords);
 
-        float3 viewDirection = normalize(
-           _WorldSpaceCameraPos - input.posWorld.xyz);
-        float3 lightDirection;
-        float attenuation;
+	        float3x3 local2WorldTranspose = float3x3(input.tangentWorld,
+										             input.binormalWorld, 
+										             input.normalWorld);
+        	float3 normalDirection = normalize(mul(localCoords, local2WorldTranspose));
 
-        if (0.0 == _WorldSpaceLightPos0.w) // directional light?
-        {
-           attenuation = 1.0; // no attenuation
-           lightDirection = normalize(_WorldSpaceLightPos0.xyz);
-        } 
-        else // point or spot light
-        {
-           float3 vertexToLightSource = 
-              _WorldSpaceLightPos0.xyz - input.posWorld.xyz;
-           float distance = length(vertexToLightSource);
-           attenuation = 1.0 / distance; // linear attenuation 
-           lightDirection = normalize(vertexToLightSource);
-        }
+	        float3 viewDirection = normalize(_WorldSpaceCameraPos - input.posWorld.xyz);
+	        float3 lightDirection;
+	        float attenuation;
 
-        float3 diffuseReflection = 
-           attenuation * _LightColor0.rgb * diffuseColor
-           * abs(dot(normalDirection, lightDirection));
+	        if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+	        {
+	            attenuation = 1.0; // no attenuation
+	            lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+	        } 
+	        else // point or spot light
+	        {
+	            float3 vertexToLightSource = _WorldSpaceLightPos0.xyz - input.posWorld.xyz;
+	            float distance = length(vertexToLightSource);
+	            attenuation = 1.0 / distance; // linear attenuation 
+	            lightDirection = normalize(vertexToLightSource);
+	        }
 
-        float3 specularReflection;
-        if (dot(normalDirection, lightDirection) < 0.0) 
-           // light source on the wrong side?
-        {
-           specularReflection = float3(0.0, 0.0, 0.0); 
-              // no specular reflection
-        }
-        else // light source on the right side
-        {
-        float4 specColor = tex2D(_SpecText, input.tex.xy);
-        float4 specValue = ((specColor.x + specColor.y + specColor.z)/3)*_Intensity;
+	        float3 diffuseReflection = attenuation * _LightColor0.rgb * diffuseColor * abs(dot(normalDirection, lightDirection));
+
+	        float3 specularReflection;
+	        if (dot(normalDirection, lightDirection) < 0.0) {
+	           // light source on the wrong side?
+	           specularReflection = float3(0.0, 0.0, 0.0); 
+	           // no specular reflection
+	        } else { // light source on the right side 
+		       float4 specColor = tex2D(_SpecText, input.tex.xy);
+		       float4 specValue = ((specColor.x + specColor.y + specColor.z)/3)*_Intensity;
         
-           specularReflection = attenuation * _LightColor0.rgb 
-              * specValue 
-              * pow(max(0.0, dot(
-              	reflect(-lightDirection, normalDirection), 
-              viewDirection)), _Shininess);
-        }
-        return float4(diffuseReflection + specularReflection * input.levelOfLighting, 1.0);
-	}
+	           specularReflection = attenuation * _LightColor0.rgb 
+									            * specValue 
+									            * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), _Shininess);
+	        }
+	        return float4(diffuseReflection + specularReflection * input.levelOfLighting, 1.0);
+		}
  
-     ENDCG
+     	ENDCG
       }
    } 
    Fallback "Decal"

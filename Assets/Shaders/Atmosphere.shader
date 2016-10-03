@@ -23,7 +23,7 @@ Shader "Atmosphere" {
          #pragma fragment frag 
  
          #include "UnityCG.cginc"
- 
+
          uniform float4 _Color; // define shader property for shaders
          uniform float _AtmophereOpacity;
          uniform float _EarthSurfaceCorrection;
@@ -59,17 +59,12 @@ Shader "Atmosphere" {
             float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
                
  
-            output.normal = normalize(
-               mul(float4(input.normal, 0.0), modelMatrixInverse).xyz);
-            output.viewDir = normalize(_WorldSpaceCameraPos 
-               - mul(modelMatrix, input.vertex).xyz);
+            output.normal = normalize(mul(float4(input.normal, 0.0), modelMatrixInverse).xyz);
+            output.viewDir = normalize(_WorldSpaceCameraPos - mul(modelMatrix, input.vertex).xyz);
             output.normalWorld = output.normal;   
                
-            output.tangentWorld = normalize(
-            	mul(modelMatrix, float4(input.tangent.xyz, 0.0)).xyz);
-         	output.binormalWorld = normalize(
-            	cross(output.normalWorld, output.tangentWorld) 
-            	* input.tangent.w); // tangent.w is specific to Unity
+            output.tangentWorld = normalize(mul(modelMatrix, float4(input.tangent.xyz, 0.0)).xyz);
+         	output.binormalWorld = normalize(cross(output.normalWorld, output.tangentWorld) * input.tangent.w); // tangent.w is specific to Unity
 
          	output.posWorld = mul(modelMatrix, input.vertex);
  
@@ -83,7 +78,7 @@ Shader "Atmosphere" {
          float4 frag(vertexOutput input) : COLOR
          {
             float3 normalDirection = normalize(input.normal);
-            float3 viewDirection = normalize(input.viewDir);
+            float3 viewDirection = normalize(input.viewDir); 
 
             //float dotProd = dot(viewDirection, normalDirection);
             //float jellyfishEffect = abs(dotProd-0.27);
