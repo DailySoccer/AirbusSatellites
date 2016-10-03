@@ -3,9 +3,11 @@
 
 Shader "Atmosphere" {
    Properties {
-      _Color ("Color", Color) = (1, 1, 1, 0.5) 
-      
+      //_Color ("Color", Color) = (1, 1, 1, 0.5) 
+
       _AtmophereOpacity ("AtmophereOpacity", range(0, 10)) = 1
+
+      _EarthSurfaceCorrection ("EarthSurfaceCorrection", range(0, 1)) = 0.73
          // user-specified RGBA color including opacity
    }
    SubShader {
@@ -24,6 +26,7 @@ Shader "Atmosphere" {
  
          uniform float4 _Color; // define shader property for shaders
          uniform float _AtmophereOpacity;
+         uniform float _EarthSurfaceCorrection;
  
          struct vertexInput {
             float4 vertex : POSITION;
@@ -53,8 +56,7 @@ Shader "Atmosphere" {
             float4x4 modelMatrix = unity_ObjectToWorld;
             float4x4 modelMatrixInverse = unity_WorldToObject; 
             
-            float3 lightDirection = normalize(
-               _WorldSpaceLightPos0.xyz);
+            float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
                
  
             output.normal = normalize(
@@ -71,8 +73,7 @@ Shader "Atmosphere" {
 
          	output.posWorld = mul(modelMatrix, input.vertex);
  
-            output.levelOfLighting = 
-               max(0.0, dot(output.normal, lightDirection));
+            output.levelOfLighting = max(0.0, dot(output.normal, lightDirection));
             output.tex = input.texcoord;
  
             output.pos = mul(UNITY_MATRIX_MVP, input.vertex);
@@ -83,14 +84,43 @@ Shader "Atmosphere" {
          {
             float3 normalDirection = normalize(input.normal);
             float3 viewDirection = normalize(input.viewDir);
- 
-            float newOpacity = min( 1.0, (_Color.a 
-               / abs( dot (viewDirection, normalDirection ) ) ) * min( 1.0, input.levelOfLighting * _AtmophereOpacity ) );
-               
+
+            //float dotProd = dot(viewDirection, normalDirection);
+            //float jellyfishEffect = abs(dotProd-0.27);
+            //jellyfishEffect = pow(jellyfishEffect,0.3);
+
+            //jellyfishEffect = abs( dot (viewDirection, normalDirection )  );
+
+            //jellyfishEffect = _Color.a / abs( dot (viewDirection, normalDirection )  );
+            float dotProd = dot(viewDirection, normalDirection);
+            float inverseCorrection = (1.0/_EarthSurfaceCorrection);
+            float atmosMultiplier = 1 / (inverseCorrection - 1);
+            // Rayleigh wavelength nm 5.8, 13.5, 33.1
+            //float rayleigh = float3(5.8, 13.5, 33.1);
+
+            float dotCorrected = (1 - dotProd) * (1.0/_EarthSurfaceCorrection);
+            int isAtmos = max(0.0, sign(dotCorrected - 1));
+
+
+            float jellyfishEffect = min(1.0, dotCorrected) - (isAtmos * (dotCorrected - 1) * atmosMultiplier);
+
+            //jellyfishEffect = pow(jellyfishEffect, 2.5);// + (dotCorrected * isAtmos * 3);
+
+            float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+            float levelOfLighting = max(0.0, dot(normalDirection, lightDirection));
+            //levelOfLighting = input.levelOfLighting;
+
+            float newOpacity = min(1.0, jellyfishEffect  * min(1.0, levelOfLighting * _AtmophereOpacity) );
+
             
-	        
-	            
-            return float4(_Color.rgb, newOpacity);
+	        //if (dotCorrected >= 1) return float4(1,0,0, 1);
+
+            //return float4(_Color.rgb, newOpacity);
+            float3 rayleigh = float3((1-levelOfLighting), 0.2, newOpacity);
+            rayleigh.g = (rayleigh.r + rayleigh.b)/2;
+
+            //return float4(levelOfLighting*levelOfLighting*levelOfLighting*newOpacity, newOpacity*levelOfLighting, newOpacity/levelOfLighting , newOpacity);
+            return float4(rayleigh, newOpacity);
          }
  
          ENDCG
