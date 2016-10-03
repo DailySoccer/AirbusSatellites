@@ -148,7 +148,7 @@ Shader "Cg multitexturing of Earth" {
               	reflect(-lightDirection, normalDirection), 
               viewDirection)), _Shininess);
         }
-        return float4(diffuseReflection + specularReflection, 1.0);
+        return float4(diffuseReflection + specularReflection * input.levelOfLighting, 1.0);
 	}
  
      ENDCG
