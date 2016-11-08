@@ -26,8 +26,8 @@ public class SmoothCameraOrbit : MonoBehaviour {
 	{
 		_moveToRotation = transform.eulerAngles;
 		_currentSmoothPosition = target.position;
-		_currentSmoothOrbitalDistance = distance;
-		_orbitalDistance = distance;
+		//_currentSmoothOrbitalDistance = distance;
+		//_orbitalDistance = distance;
 		
 		var rot = Quaternion.Euler(_moveToRotation.y, _moveToRotation.x, 0);
     	var pos = rot * new Vector3(0.0f, 0.0f, -distance) + target.position;
@@ -74,7 +74,7 @@ public class SmoothCameraOrbit : MonoBehaviour {
 			_moveToRotation += _aceleration;
 			_moveToRotation.x = ClampAngle(_moveToRotation.x, pitchBottomLimit, pitchTopLimit);
 			_moveToPosition = target.position;
-			_orbitalDistance = distance;
+			//_orbitalDistance = distance;
 
 			
 			_currentSmoothRotation = Vector3.SmoothDamp(_currentSmoothRotation, _moveToRotation, ref _lastSmoothAngleVelocity, _timeLeft);
@@ -216,7 +216,7 @@ public class SmoothCameraOrbit : MonoBehaviour {
 				
 				_timeLeft = cameraTransitionTime;
 
-				_orbitalDistance = 0.0f;
+				//_orbitalDistance = 0.0f;
 			}
 			break;
 		case CameraState.FreeRotation:
@@ -314,8 +314,8 @@ public class SmoothCameraOrbit : MonoBehaviour {
 	private Vector3 _currentSmoothPosition;
 	private Vector3 _lastSmoothPositionVelocity;
 
-	private float _orbitalDistance;
-	private float _currentSmoothOrbitalDistance;
+	//private float _orbitalDistance;
+	//private float _currentSmoothOrbitalDistance;
 	private float _lastSmoothOrbitalVelocity;
 	
 	private float _timeLeft;
