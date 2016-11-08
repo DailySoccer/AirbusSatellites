@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 3d90c960b6db24d0b909bf38821d536a
+timeCreated: 1478618718
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - BankGothic
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 0998db4b84a9f4f03b485c0e151a4bf3, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
