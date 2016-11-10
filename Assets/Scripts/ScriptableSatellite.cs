@@ -24,8 +24,10 @@ public class ScriptableSatellite : ScriptableObject {
 	public InfoType Type;
 	public string MassAtLaunch;
 
-	[ContextMenu("log")]
-	string GetTypeString() {
+	public string URL;
+
+	//[ContextMenu("log")]
+	public string GetTypeString() {
 		Debug.Log( Type.ToString ().Replace("_", " "));
 		return Type.ToString ().Replace("_", " ");
 	}
