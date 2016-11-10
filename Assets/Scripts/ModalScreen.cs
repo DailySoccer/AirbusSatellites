@@ -16,6 +16,7 @@ public class ModalScreen : MonoBehaviour {
 	public Text Date;
 	public Text Type;
 	public Text MassAtLaunch;
+	public Text satName;
 	public string url;
 
 	public static ModalScreen Instance;
@@ -46,14 +47,15 @@ public class ModalScreen : MonoBehaviour {
 		canvasGroup.interactable = true;
 		canvasGroup.blocksRaycasts = true;
 
-		Excerpt.text 		= sat.Excerpt;
+		Excerpt.text 		= sat.Excerpt.ToUpper();
 		Description.text	= sat.Description;
 		NameImage.sprite	= sat.NameImage;
 		Picture.sprite 		= sat.Picture;
-		Country.text 		= sat.Country;
-		Date.text 			= sat.Date;
-		Type.text 			= sat.GetTypeString ();
-		MassAtLaunch.text 	= sat.MassAtLaunch;
+		Country.text 		= sat.Country.ToUpper();
+		Date.text 			= sat.Date.ToUpper();
+		Type.text 			= sat.GetTypeString ().ToUpper();
+		MassAtLaunch.text 	= sat.MassAtLaunch.ToUpper();
+		satName.text		= ("MORE ABOUT " + sat.SatelliteName).ToUpper();
 		url 				= sat.URL;
 	}
 

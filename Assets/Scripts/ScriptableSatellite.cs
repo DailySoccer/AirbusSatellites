@@ -6,11 +6,11 @@ using UnityEngine.UI;
 public class ScriptableSatellite : ScriptableObject {
 
 	public enum InfoType {
+		EMPTY,
 		OPTICAL,
-		WEATHER_CONTROL,
-		WAR
+		WEATHER_CONTROL
 	}
-		
+	public string SatelliteName;	
 	public string Excerpt;
 	public string Description;
 
