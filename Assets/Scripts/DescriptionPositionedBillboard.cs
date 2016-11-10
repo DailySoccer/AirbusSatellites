@@ -4,6 +4,7 @@ using System.Collections;
 public class DescriptionPositionedBillboard : MonoBehaviour
 {
 	public Camera referenceCamera;
+	public float earthRadius;
 	public float distanceRadius;
 
 	void  Awake ()
@@ -26,7 +27,10 @@ public class DescriptionPositionedBillboard : MonoBehaviour
 		Transform parentPosition = transform.parent;
 
 
-		Vector3 aN = (parentPosition.position - ZeroPoint.position).normalized;
-		transform.position = (aN * distanceRadius) + parentPosition.position;
+		Vector3 aN = parentPosition.localPosition.normalized;
+
+		parentPosition.localPosition = aN * earthRadius;
+
+		transform.localPosition = (aN * distanceRadius);
 	}
 }

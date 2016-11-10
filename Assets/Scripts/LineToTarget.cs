@@ -18,7 +18,7 @@ public class LineToTarget : MonoBehaviour {
 
 		LR = GetComponent<LineRenderer>();
 		LR.SetWidth(0.002f, 0.002f);
-		LR.material.shader = Shader.Find("Mobile/Unlit (Supports Lightmap)");
+		LR.material.shader = Shader.Find ("Sprites/Default"); //"Mobile/Unlit (Supports Lightmap)";
 		LR.SetColors (startColor, endColor);
 		LR.SetVertexCount (2);
 
