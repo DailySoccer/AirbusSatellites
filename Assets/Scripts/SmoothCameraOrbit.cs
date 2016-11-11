@@ -112,19 +112,31 @@ public class SmoothCameraOrbit : MonoBehaviour {
 		}
 
 		_timeLeft = Mathf.Max(_timeLeft - Time.deltaTime, 0.0f);
-		Debug.Log("Time to target: " + _timeLeft.ToString());
+		//Debug.Log("Time to target: " + _timeLeft.ToString());
 		
 	}
 
-	public SmoothCameraOrbit ChangeCameraSettings(Transform newPosition, CameraState camState = CameraState.FreeRotation, Transform newTarget = null)
+	public SmoothCameraOrbit ChangeCameraSettings(Transform newPosition, CameraState camState = CameraState.FreeRotation, float offsetDist = 0f, Transform newTarget = null)
 	{
 		_isDraggingMouse = false;
-		if (newPosition != null)
-		{
-			SetNewPosition(newPosition);
+
+		if (offsetDist > 0) {
+			float Dist = Vector3.Distance(newTarget.position, newPosition.position);
+			Vector3 newPos = newPosition.position  + (newPosition.position - newTarget.position).normalized * (offsetDist);
+
+			GameObject n = new GameObject ("temp");
+			n.transform.position = newPos;
+			n.transform.LookAt (newTarget);
+			SetNewPosition(n.transform);
+			Destroy(n);
+
+		} else {
+			if (newPosition != null) {
+				SetNewPosition (newPosition);
+			}
 		}
-		SetNewTarget(newTarget);
-		SetCameraState(camState);
+		SetNewTarget (newTarget);
+		SetCameraState (camState);
 
 		return this;
 	}

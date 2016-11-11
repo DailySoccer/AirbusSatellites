@@ -29,11 +29,13 @@ public class ModalScreen : MonoBehaviour {
 			Instance = this;
 
 		canvasGroup = GetComponent<CanvasGroup> ();
+		_sats = GameObject.FindGameObjectsWithTag("Satellite");
 	}
 
 	// Use this for initialization
 	void Start () {
-		Earth = GameObject.FindGameObjectWithTag("Tierra");
+		_earth = GameObject.FindGameObjectWithTag("Tierra");
+		_lastCameraTransitionTime = SmoothCameraOrbit.Instance.cameraTransitionTime;
 		Close ();
 	}
 	
@@ -67,18 +69,40 @@ public class ModalScreen : MonoBehaviour {
 
 	IEnumerator GotoToTarget(ScriptableSatellite sat) {
 		GameObject sender = EventSystem.current.currentSelectedGameObject;
-		cameraDist = SmoothCameraOrbit.Instance.distance;
+
+		SetOnlySatelliteVisible (sender);
+		sender.GetComponent<Button> ().Select ();
+
 		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed);
+
 		while (SmoothCameraOrbit.Instance.GetTimeLeftToTarget() > 0) {
 			yield return null;
 		}
+
 		SetModalInfo(sat);
+
+		SmoothCameraOrbit.Instance.cameraTransitionTime = 0.5f;
+		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed, 0.05f, _earth.transform);
+	}
+
+	void SetOnlySatelliteVisible(GameObject sat) {
+		SetAllSatellitesVisibility(false);
+		if (sat != null) 
+			sat.SetActive(true);
+	}
+
+	void SetAllSatellitesVisibility(bool visibility) {
+		foreach(GameObject go in _sats) {
+			go.SetActive(visibility);
+		}
 	}
 
 	public void Close() {
 		canvasGroup.alpha = 0f;
-		canvasGroup.interactable = false;
+		canvasGroup.interactable = false; 
 		canvasGroup.blocksRaycasts = false;
+		SetAllSatellitesVisibility(true);
+		SmoothCameraOrbit.Instance.cameraTransitionTime = _lastCameraTransitionTime;
 		SmoothCameraOrbit.Instance.ChangeCameraSettings(null, CameraState.FreeRotation);
 	}
 
@@ -87,6 +111,8 @@ public class ModalScreen : MonoBehaviour {
 	}
 
 
-	GameObject Earth;
-	float cameraDist;
+	GameObject _earth;
+	//float cameraDist;
+	GameObject[] _sats;
+	float _lastCameraTransitionTime;
 }
