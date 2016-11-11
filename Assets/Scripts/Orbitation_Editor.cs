@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(Orbitation))]
@@ -169,3 +170,4 @@ public class OrbitationEditor : Editor {
 		}
 	}
 }
+#endif

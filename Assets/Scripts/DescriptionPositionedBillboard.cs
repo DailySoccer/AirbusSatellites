@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[ExecuteInEditMode]
 public class DescriptionPositionedBillboard : MonoBehaviour
 {
 	public Camera referenceCamera;
 	public float earthRadius;
 	public float distanceRadius;
+	public Color GizmoColor;
 
 	void  Awake ()
 	{
@@ -16,14 +18,24 @@ public class DescriptionPositionedBillboard : MonoBehaviour
 
 	void Update()
 	{
-		transform.LookAt(transform.position + referenceCamera.transform.rotation * Vector3.forward,
-		                 referenceCamera.transform.rotation * Vector3.up);
+		transform.LookAt(transform.position + referenceCamera.transform.rotation * Vector3.forward, referenceCamera.transform.rotation * Vector3.up);
+
+		if (Vector3.Distance (transform.position, transform.parent.position) != distanceRadius) {
+			Vector3 vN = (transform.position - transform.parent.position).normalized;
+			transform.localPosition = (vN * distanceRadius);
+		}
+
+	}
+
+	void OnDrawGizmos() {
+		Gizmos.color = GizmoColor;
+		Gizmos.DrawLine(transform.position, transform.parent.position);
 	}
 
 	[ContextMenu("Positcionar")]
 	public void Reposition ()
 	{
-		Transform ZeroPoint = GameObject.FindGameObjectWithTag("Tierra").transform;
+		//Transform ZeroPoint = GameObject.FindGameObjectWithTag("Tierra").transform;
 		Transform parentPosition = transform.parent;
 
 
