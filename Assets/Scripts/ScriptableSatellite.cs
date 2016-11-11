@@ -28,7 +28,6 @@ public class ScriptableSatellite : ScriptableObject {
 
 	//[ContextMenu("log")]
 	public string GetTypeString() {
-		Debug.Log( Type.ToString ().Replace("_", " "));
 		return Type.ToString ().Replace("_", " ");
 	}
 }

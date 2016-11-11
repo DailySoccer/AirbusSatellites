@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class ModalScreen : MonoBehaviour {
 
@@ -28,11 +29,12 @@ public class ModalScreen : MonoBehaviour {
 			Instance = this;
 
 		canvasGroup = GetComponent<CanvasGroup> ();
-		Close ();
 	}
 
 	// Use this for initialization
-	void Start () {	
+	void Start () {
+		Earth = GameObject.FindGameObjectWithTag("Tierra");
+		Close ();
 	}
 	
 	// Update is called once per frame
@@ -43,10 +45,14 @@ public class ModalScreen : MonoBehaviour {
 		if (sat == null)
 			return;
 
+		StartCoroutine(GotoToTarget(sat));
+	}
+
+	void SetModalInfo(ScriptableSatellite sat) {
 		canvasGroup.alpha = 1f;
 		canvasGroup.interactable = true;
 		canvasGroup.blocksRaycasts = true;
-
+		
 		Excerpt.text 		= sat.Excerpt.ToUpper();
 		Description.text	= sat.Description;
 		NameImage.sprite	= sat.NameImage;
@@ -59,13 +65,28 @@ public class ModalScreen : MonoBehaviour {
 		url 				= sat.URL;
 	}
 
+	IEnumerator GotoToTarget(ScriptableSatellite sat) {
+		GameObject sender = EventSystem.current.currentSelectedGameObject;
+		cameraDist = SmoothCameraOrbit.Instance.distance;
+		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed);
+		while (SmoothCameraOrbit.Instance.GetTimeLeftToTarget() > 0) {
+			yield return null;
+		}
+		SetModalInfo(sat);
+	}
+
 	public void Close() {
 		canvasGroup.alpha = 0f;
 		canvasGroup.interactable = false;
 		canvasGroup.blocksRaycasts = false;
+		SmoothCameraOrbit.Instance.ChangeCameraSettings(null, CameraState.FreeRotation);
 	}
 
 	public void GoToSatelliteLink() {
 		Application.OpenURL (url);
 	}
+
+
+	GameObject Earth;
+	float cameraDist;
 }

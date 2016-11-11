@@ -6,7 +6,9 @@ public enum CameraState {
 	Fixed
 }
 public class SmoothCameraOrbit : MonoBehaviour {
-	
+
+	public static SmoothCameraOrbit Instance;
+
 	public Transform target;
 	public Transform currentCameraOrigin;
 
@@ -21,7 +23,11 @@ public class SmoothCameraOrbit : MonoBehaviour {
 	public float limitSpeedChangeDir 	= 10f;
 	public float cameraTransitionTime 	= 1f;
 
-	
+	void Awake() {
+		if (Instance == null)
+			Instance = this;
+	}
+
 	void Start () 
 	{
 		_moveToRotation = transform.eulerAngles;
@@ -45,6 +51,8 @@ public class SmoothCameraOrbit : MonoBehaviour {
 			_currentSmoothRotation = Vector3.SmoothDamp(_currentSmoothRotation, _moveToRotation, ref _lastSmoothAngleVelocity, _timeLeft/2);
 			
 			_currentSmoothPosition = Vector3.SmoothDamp(_currentSmoothPosition, _moveToPosition, ref _lastSmoothPositionVelocity, _timeLeft);
+
+
 			
 			//Debug.Log("POS --> Curr:" + _currentSmoothPosition + "MovetTo:" + _moveToPosition + " || ROT --> Curr:" + _currentSmoothRotation + "MovetTo:" + _moveToRotation);
 			break;
@@ -104,6 +112,7 @@ public class SmoothCameraOrbit : MonoBehaviour {
 		}
 
 		_timeLeft = Mathf.Max(_timeLeft - Time.deltaTime, 0.0f);
+		Debug.Log("Time to target: " + _timeLeft.ToString());
 		
 	}
 
@@ -220,9 +229,9 @@ public class SmoothCameraOrbit : MonoBehaviour {
 			}
 			break;
 		case CameraState.FreeRotation:
-			if(cameraState != newState) {
+			/*if(cameraState != newState) {
 				_moveToRotation = Vector3.zero;
-			}
+			}*/
 			aproximateRotations();
 			break;
 		}
@@ -301,6 +310,10 @@ public class SmoothCameraOrbit : MonoBehaviour {
 		DesiredAcceleration = new Vector3(clampedInc, 0, 0);
 
 		return this;
+	}
+
+	public float GetTimeLeftToTarget() {
+		return _timeLeft;
 	}
 	
 	private Vector3 _aceleration = Vector3.zero;
