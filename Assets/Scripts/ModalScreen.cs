@@ -73,7 +73,8 @@ public class ModalScreen : MonoBehaviour {
 		SetOnlySatelliteVisible (sender);
 		sender.GetComponent<Button> ().Select ();
 
-		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed);
+		//SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed);
+		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed, 0.05f, _earth.transform);
 
 		while (SmoothCameraOrbit.Instance.GetTimeLeftToTarget() > 0) {
 			yield return null;
@@ -81,8 +82,8 @@ public class ModalScreen : MonoBehaviour {
 
 		SetModalInfo(sat);
 
-		SmoothCameraOrbit.Instance.cameraTransitionTime = 0.5f;
-		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed, 0.05f, _earth.transform);
+		/*SmoothCameraOrbit.Instance.cameraTransitionTime = 0.5f;
+		SmoothCameraOrbit.Instance.ChangeCameraSettings (sender.transform, CameraState.Fixed, 0.05f, _earth.transform);*/
 	}
 
 	void SetOnlySatelliteVisible(GameObject sat) {
