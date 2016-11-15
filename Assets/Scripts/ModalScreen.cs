@@ -79,7 +79,7 @@ public class ModalScreen : MonoBehaviour {
 		while (SmoothCameraOrbit.Instance.GetTimeLeftToTarget() > 0) {
 			yield return null;
 		}
-
+		SetAllSatellitesVisibility (false);
 		SetModalInfo(sat);
 
 		/*SmoothCameraOrbit.Instance.cameraTransitionTime = 0.5f;
@@ -108,7 +108,8 @@ public class ModalScreen : MonoBehaviour {
 	}
 
 	public void GoToSatelliteLink() {
-		Application.OpenURL (url);
+		//Application.OpenURL (url);
+		Application.ExternalEval("window.open('" + url + ", _blank');");
 	}
 
 
